@@ -70,12 +70,12 @@ void drawData(float x, float y, String abbrev) {
   //float mapped = map(value, dataMin, dataMax, 2, 40);
   // Draw an ellipse for this item
   ellipseMode(RADIUS);
-  ellipse(x, y, 15, 15);
+  ellipse(x, y, radius, radius);
   
   if(dist(x, y, mouseX, mouseY) < radius+2) {
     fill(0);
     textAlign(CENTER);
     // Show the data value and the state abbrev in parens
-    text(value + " (" + abbrev + ")", x, y-radius-8);
+    text(value + " (" + abbrev + ")", x, y-radius-4);
   }
 }
