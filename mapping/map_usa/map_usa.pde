@@ -7,6 +7,11 @@ Table dataTable;
 float dataMin = MAX_FLOAT;
 float dataMax = MIN_FLOAT;
 
+float closestDist;
+String closestText;
+float closestTextX;
+float closestTextY;
+
 void setup() {
   size(640, 400);
   PFont font = loadFont("STIXVariants-Bold-12.vlw");
@@ -19,6 +24,8 @@ void setup() {
   
   // Read the data table
   dataTable = new Table("random.tsv");
+  
+  nameTable = new Table("names.tsv");
   
   // Find min and max values
   for (int row = 0; row < rowCount; row++) {
@@ -36,6 +43,8 @@ void draw() {
   background(255);
   image(mapImage, 0, 0);
   
+  closestDist = MAX_FLOAT;
+  
   // Drawing attributes for the ellipses
   smooth();
   fill(192, 0, 0);
@@ -47,6 +56,14 @@ void draw() {
     float x = locationTable.getFloat(abbrev, 1); // column 1
     float y = locationTable.getFloat(abbrev, 2); // column 2
     drawData(x, y, abbrev);
+  }
+  
+  // use global vars set in drawData() to
+  // draw text related to closest circle
+  if (closestDist != MAX_FLOAT) {
+    fill(0);
+    textAlign(CENTER);
+    text(closestText, closestTextX, closestTextY);
   }
 }
 
@@ -72,10 +89,17 @@ void drawData(float x, float y, String abbrev) {
   ellipseMode(RADIUS);
   ellipse(x, y, radius, radius);
   
-  if(dist(x, y, mouseX, mouseY) < radius+2) {
-    fill(0);
-    textAlign(CENTER);
+  float d = dist(x, y, mouseX, mouseY);
+  // Bc the following check is done each time a new
+  // circle is drawn, we end up with values of the 
+  // circle closest to the mouse
+  
+  if((d < radius + 2) && (d < closestDist)) {
+    closestDist = d;
     // Show the data value and the state abbrev in parens
-    text(value + " (" + abbrev + ")", x, y-radius-4);
+    String name = nameTable.getString(abbrev, 1);
+    closestText = name + " " + value;
+    closestTextX = x;
+    closestTextY = y-radius-4;
   }
 }
