@@ -1,5 +1,6 @@
 PImage mapImage;
 Table locationTable;
+Table nameTable;
 int rowCount;
 
 Table dataTable;
@@ -8,6 +9,8 @@ float dataMax = MIN_FLOAT;
 
 void setup() {
   size(640, 400);
+  PFont font = loadFont("STIXVariants-Bold-12.vlw");
+  textFont(font);
   mapImage = loadImage("map.png");
   // Make a data table from a file that contains
   // the coordinates of each state
@@ -52,12 +55,13 @@ void draw() {
 void drawData(float x, float y, String abbrev) {
   // Get data value for state
   float value = dataTable.getFloat(abbrev, 1);
+  float radius = 0;
   if (value >= 0) {
-    float a = map(value, 0, dataMax, 0, 255);
-    fill(#333366, a); // blue
+    radius = map(value, 0, dataMax, 1.5, 15);
+    fill(#333366); // blue
   } else {
-    float a = map(value, 0, dataMin, 0, 255);
-    fill(#EC5166, a); // red
+    radius = map(value, 0, dataMin, 1.5, 15);
+    fill(#EC5166); // red
   }
   //float percent = norm(value, dataMin, dataMax);
   //color between = lerpColor(#296F34, #61E2F0, percent,HSB);
@@ -65,5 +69,13 @@ void drawData(float x, float y, String abbrev) {
   // Re-map the value to a number between 2 and 40
   //float mapped = map(value, dataMin, dataMax, 2, 40);
   // Draw an ellipse for this item
+  ellipseMode(RADIUS);
   ellipse(x, y, 15, 15);
+  
+  if(dist(x, y, mouseX, mouseY) < radius+2) {
+    fill(0);
+    textAlign(CENTER);
+    // Show the data value and the state abbrev in parens
+    text(value + " (" + abbrev + ")", x, y-radius-8);
+  }
 }
