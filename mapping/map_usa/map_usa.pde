@@ -5,9 +5,11 @@ float dataMax = 10;
 Table nameTable;
 int rowCount;
 
+Integrator[] interpolators;
+
 Table dataTable;
-float dataMin = MAX_FLOAT;
-float dataMax = MIN_FLOAT;
+//float dataMin = MAX_FLOAT;
+//float dataMax = MIN_FLOAT;
 
 float closestDist;
 String closestText;
@@ -27,6 +29,12 @@ void setup() {
   // Read the data table
   dataTable = new Table("random.tsv");
   
+  // Setup: loat initial values into the integrator
+  interpolators = new Integrator[rowCount];
+  for (int row = 0; row < rowCount; row++) {
+    float initialValue = dataTable.getFloat(row, 1);
+    interpolators[row] = new Integrator(initialValue, 0.5, 0.01);
+  }
   nameTable = new Table("names.tsv");
   
   // Find min and max values - remove bc of dynamic values added 
@@ -45,6 +53,13 @@ void draw() {
   background(255);
   image(mapImage, 0, 0);
   
+  
+  // Draw: update the Integrator with the current vals
+  // which are either those from the setup() fn or 
+  // those loaded by the target() fn issued in updateTable()
+  for (int row = 0; row < rowCount; row++) {
+    interpolators[row].update();
+  }
   closestDist = MAX_FLOAT;
   
   // Drawing attributes for the ellipses
@@ -72,8 +87,9 @@ void draw() {
 // Map the size of the ellipse to the data value
 
 void drawData(float x, float y, String abbrev) {
-  // Get data value for state
-  float value = dataTable.getFloat(abbrev, 1);
+  // Get data value for state]
+  int row = dataTable.getRowIndex(abbrev);
+  float value = interpolators[row].value;
   float radius = 0;
   if (value >= 0) {
     radius = map(value, 0, dataMax, 1.5, 15);
@@ -99,8 +115,10 @@ void drawData(float x, float y, String abbrev) {
   if((d < radius + 2) && (d < closestDist)) {
     closestDist = d;
     // Show the data value and the state abbrev in parens
-    String name = nameTable.getString(abbrev, 1);
-    closestText = name + " " + nf(value, 0, 2);
+    String name = dataTable.getString(abbrev, 0);
+    // Use target (not curr) value for showing data point
+    String val = nfp(interpolators[row].target, 0, 2);
+    closestText = name + " " + val;
     closestTextX = x;
     closestTextY = y-radius-4;
   }
@@ -114,7 +132,8 @@ void keyPressed() {
 
 void updateTable() {
   for (int row = 0; row < rowCount; row++) {
-    float newValue = random(dataMin, dataMax);
-    dataTable.setFloat(row, 1, newValue);
+    float newValue = random(-10, 10);
+    interpolators[row].target(newValue);
   }
+  //dataTable = new Table("http://benfry.com/writing/map/random.cgi");
 }
