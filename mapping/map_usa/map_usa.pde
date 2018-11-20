@@ -1,5 +1,7 @@
 PImage mapImage;
 Table locationTable;
+float dataMin = -10;
+float dataMax = 10;
 Table nameTable;
 int rowCount;
 
@@ -27,16 +29,16 @@ void setup() {
   
   nameTable = new Table("names.tsv");
   
-  // Find min and max values
-  for (int row = 0; row < rowCount; row++) {
-    float value = dataTable.getFloat(row, 1);
-    if (value > dataMax) {
-      dataMax = value;
-    }
-    if (value < dataMin) {
-      dataMin = value;
-    }
-  }
+  // Find min and max values - remove bc of dynamic values added 
+  //for (int row = 0; row < rowCount; row++) {
+  //  float value = dataTable.getFloat(row, 1);
+  //  if (value > dataMax) {
+  //    dataMax = value;
+  //  }
+  //  if (value < dataMin) {
+  //    dataMin = value;
+  //  }
+  //}
 }
 
 void draw() {
@@ -98,8 +100,21 @@ void drawData(float x, float y, String abbrev) {
     closestDist = d;
     // Show the data value and the state abbrev in parens
     String name = nameTable.getString(abbrev, 1);
-    closestText = name + " " + value;
+    closestText = name + " " + nf(value, 0, 2);
     closestTextX = x;
     closestTextY = y-radius-4;
+  }
+}
+
+void keyPressed() {
+  if (key == ' ') {
+    updateTable();
+  }
+}
+
+void updateTable() {
+  for (int row = 0; row < rowCount; row++) {
+    float newValue = random(dataMin, dataMax);
+    dataTable.setFloat(row, 1, newValue);
   }
 }
