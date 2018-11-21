@@ -19,6 +19,8 @@ int yearInterval = 10;
 int volumeInterval = 10;
 int volumeIntervalMinor = 5;
 
+float barWidth = 4;
+
 void setup() {
   size(720, 405);
   data = new FloatTable("milk-tea-coffee.tsv");
@@ -55,9 +57,10 @@ void draw() {
   
   noStroke();
   fill(#5679C1);
-  drawDataArea(currentColumn);
+  //drawDataArea(currentColumn);
+  drawDataBars(currentColumn);
   
-  drawYearLabels();
+  //drawYearLabels();
 }
 
 void drawTitle() {
@@ -210,4 +213,18 @@ void drawDataArea(int col) {
   vertex(plotX2, plotY2);
   vertex(plotX1, plotY2);
   endShape(CLOSE);
+}
+
+void drawDataBars(int col) {
+  noStroke();
+  rectMode(CORNERS);
+  
+  for (int row = 0; row < rowCount; row++) {
+    if (data.isValid(row, col)) {
+      float value = data.getFloat(row, col);
+      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+      float y = map(value, dataMin, dataMax, plotY2, plotY1);
+      rect(x-barWidth/2, y, x+barWidth/2, plotY2);
+    }
+  }
 }
