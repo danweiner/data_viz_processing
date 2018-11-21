@@ -47,28 +47,17 @@ void setup() {
 }
 
 void draw() {
-  background(224);
-  
-  // Show the plot area as a white box
-  fill(255);
-  rectMode(CORNERS);
-  noStroke();
-  rect(plotX1, plotY1, plotX2, plotY2);
-  
+  background(255);
+   
   drawTitle();
-  drawYearLabels();
   drawAxisLabels();
   drawVolumeLabels();
   
-  strokeWeight(2);
-  // Draw the data for the first column
-  fill(#5679C1);
   noStroke();
+  fill(#5679C1);
   drawDataArea(currentColumn);
-  drawDataHighlight(currentColumn);
-  // Draws line for coffee
-  //stroke(#FF0000);
-  //drawDataLine(currentColumn + 1);
+  
+  drawYearLabels();
 }
 
 void drawTitle() {
@@ -134,7 +123,7 @@ void drawYearLabels() {
   fill(0);
   textSize(10);
   textAlign(CENTER, TOP);
-  stroke(224);
+  stroke(255);
   strokeWeight(1);
   for (int row = 0; row < rowCount; row++) {
     if (years[row] % yearInterval == 0) {
