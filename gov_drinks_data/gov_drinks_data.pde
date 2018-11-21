@@ -63,9 +63,13 @@ void draw() {
   strokeWeight(5);
   // Draw the data for the first column
   stroke(#5679C1);
-  //drawDataPoints(currentColumn);
+  drawDataPoints(currentColumn);
   noFill();
+  strokeWeight(0.5);
   drawDataLine(currentColumn);
+  // Draws line for coffee
+  //stroke(#FF0000);
+  //drawDataLine(currentColumn + 1);
 }
 
 void drawTitle() {
