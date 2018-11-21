@@ -64,7 +64,7 @@ void draw() {
   // Draw the data for the first column
   stroke(#5679C1);
   noFill();
-  drawDataLine(currentColumn);
+  drawDataCurve(currentColumn);
   drawDataHighlight(currentColumn);
   // Draws line for coffee
   //stroke(#FF0000);
@@ -185,4 +185,22 @@ void drawDataHighlight(int col) {
       }
     }
   }
+}
+
+void drawDataCurve(int col) {
+  beginShape();
+  for (int row = 0; row < rowCount; row++) {
+    if (data.isValid(row, col)) {
+      float value = data.getFloat(row, col);
+      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+      float y = map(value, dataMin, dataMax, plotY2, plotY1);
+      
+      curveVertex(x, y);
+      // Double the curve points for the start and stop
+      if ((row == 0) || (row == rowCount -1)) {
+        curveVertex(x, y);
+      }
+    }
+  }
+  endShape();
 }
