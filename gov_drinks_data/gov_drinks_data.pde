@@ -21,6 +21,10 @@ int volumeIntervalMinor = 5;
 
 float barWidth = 4;
 
+float[] tabLeft, tabRight;
+float tabTop, tabBottom;
+float tabPad = 10;
+
 void setup() {
   size(720, 405);
   data = new FloatTable("milk-tea-coffee.tsv");
@@ -51,16 +55,17 @@ void setup() {
 void draw() {
   background(255);
    
-  drawTitle();
+  //drawTitle();
   drawAxisLabels();
   drawVolumeLabels();
   
   noStroke();
   fill(#5679C1);
-  //drawDataArea(currentColumn);
-  drawDataBars(currentColumn);
+  drawDataArea(currentColumn);
+  //drawDataBars(currentColumn);
   
-  //drawYearLabels();
+  drawYearLabels();
+  drawTitleTabs();
 }
 
 void drawTitle() {
@@ -226,5 +231,41 @@ void drawDataBars(int col) {
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
       rect(x-barWidth/2, y, x+barWidth/2, plotY2);
     }
+  }
+}
+
+void drawTitleTabs() {
+  rectMode(CORNERS);
+  noStroke();
+  textSize(20);
+  textAlign(LEFT);
+  
+  // On first use of this method, allocate space for an array
+  // to store the values for the left and right edges of the tabs
+  
+  if (tabLeft == null) {
+    tabLeft = new float[columnCount];
+    tabRight = new float[columnCount];
+  }
+  
+  float runningX = plotX1;
+  tabTop = plotY1 - textAscent() - 15;
+  tabBottom = plotY1;
+  
+  for (int col = 0; col < columnCount; col++) {
+    String title = data.getColumnName(col);
+    tabLeft[col] = runningX;
+    float titleWidth = textWidth(title);
+    tabRight[col] = tabLeft[col] + tabPad + titleWidth + tabPad;
+    
+    // If current tab, set its background white, else use pale gray
+    fill(col == currentColumn ? 255 : 224);
+    rect(tabLeft[col], tabTop, tabRight[col], tabBottom);
+    
+    // If the current tab, use black for text, else use dark gray
+    fill(col == currentColumn ? 0 : 64);
+    text(title, runningX + tabPad, plotY1 - 10);
+    
+    runningX = tabRight[col];
   }
 }
