@@ -63,7 +63,9 @@ void draw() {
   strokeWeight(5);
   // Draw the data for the first column
   stroke(#5679C1);
-  drawDataPoints(currentColumn);
+  //drawDataPoints(currentColumn);
+  noFill();
+  drawDataLine(currentColumn);
 }
 
 void drawTitle() {
@@ -94,6 +96,21 @@ void drawDataPoints(int col) {
       point(x, y);
     }
   }
+}
+
+// Draw the data as a simple line with no fill
+void drawDataLine(int col) {
+  beginShape();
+  int rowCount = data.getRowCount();
+  for (int row = 0; row < rowCount; row++) {
+    if (data.isValid(row, col)) {
+      float value = data.getFloat(row, col);
+      float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
+      float y = map(value, dataMin, dataMax, plotY2, plotY1);
+      vertex(x, y);
+    }
+  }
+  endShape();
 }
 
 void keyPressed() {
