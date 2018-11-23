@@ -113,19 +113,20 @@ void drawDataLine(int col) {
   endShape();
 }
 
-void keyPressed() {
-  if (key == '[') {
-    currentColumn--;
-    if (currentColumn < 0) {
-      currentColumn = columnCount - 1;
-    }
-  } else if (key == ']') {
-    currentColumn++;
-    if (currentColumn == columnCount) {
-      currentColumn = 0;
-    }
-  }
-}
+// remove bc adding mousePressed method to move between tabs
+//void keyPressed() {
+//  if (key == '[') {
+//    currentColumn--;
+//    if (currentColumn < 0) {
+//      currentColumn = columnCount - 1;
+//    }
+//  } else if (key == ']') {
+//    currentColumn++;
+//    if (currentColumn == columnCount) {
+//      currentColumn = 0;
+//    }
+//  }
+//}
 
 void drawYearLabels() {
   fill(0);
@@ -267,5 +268,21 @@ void drawTitleTabs() {
     text(title, runningX + tabPad, plotY1 - 10);
     
     runningX = tabRight[col];
+  }
+}
+
+void mousePressed() {
+  if (mouseY > tabTop && mouseY < tabBottom) {
+    for (int col = 0; col < columnCount; col++) {
+      if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
+        setColumn(col);
+      }
+    }
+  }
+}
+
+void setColumn (int col) {
+  if (col != currentColumn) {
+    currentColumn = col;
   }
 }
