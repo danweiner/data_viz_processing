@@ -25,6 +25,9 @@ float[] tabLeft, tabRight;
 float tabTop, tabBottom;
 float tabPad = 10;
 
+PImage[] tabImageNormal;
+PImage[] tabImageHighlight;
+
 color[] fillColor;
 
 void setup() {
@@ -53,11 +56,12 @@ void setup() {
   
   smooth();
   
+  // array of colors for different charts
   fillColor = new color[columnCount];
   
   fillColor[0] = color(255, 0, 0);
-  
-  println(fillColor);
+  fillColor[1] = color(0, 255, 0);
+  fillColor[2] = color(0, 0, 255);
   
   //for (int i = 0; i < columnCount; i++) {
   //  fillColor[i] = 0;
@@ -68,19 +72,27 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+  background(224);
+  
+  // Show plot area as a white box
+  fill(255);
+  rectMode(CORNERS);
+  noStroke();
+  rect(plotX1, plotY1, plotX2, plotY2);
    
   //drawTitle();
   drawAxisLabels();
   drawVolumeLabels();
   
   noStroke();
-  fill(fillColor[0]);
+  
+  // fill graphs with different colors
+  drawYearLabels();
+  fill(fillColor[currentColumn]);
   drawDataArea(currentColumn);
   //drawDataBars(currentColumn);
-  
-  drawYearLabels();
   drawTitleTabs();
+  //changeFilled();
 }
 
 void drawTitle() {
@@ -147,7 +159,7 @@ void drawYearLabels() {
   fill(0);
   textSize(10);
   textAlign(CENTER, TOP);
-  stroke(255);
+  stroke(224);
   strokeWeight(1);
   for (int row = 0; row < rowCount; row++) {
     if (years[row] % yearInterval == 0) {
@@ -262,25 +274,33 @@ void drawTitleTabs() {
   if (tabLeft == null) {
     tabLeft = new float[columnCount];
     tabRight = new float[columnCount];
+    
+    tabImageNormal = new PImage[columnCount];
+    tabImageHighlight = new PImage[columnCount];
+    for (int col = 0; col < columnCount; col++) {
+      String title = data.getColumnName(col);
+      tabImageNormal[col] = loadImage(title + "-unselected.png");
+      tabImageHighlight[col] = loadImage(title + "-selected.png");
+    }
   }
   
   float runningX = plotX1;
   tabTop = plotY1 - textAscent() - 15;
   tabBottom = plotY1;
+  // Size based on height of the tabs by checking the
+  // height of the first (all images are the same height)
+  tabTop = plotY1 - tabImageNormal[0].height;
   
   for (int col = 0; col < columnCount; col++) {
     String title = data.getColumnName(col);
     tabLeft[col] = runningX;
-    float titleWidth = textWidth(title);
+    float titleWidth = tabImageNormal[col].width;
+    
     tabRight[col] = tabLeft[col] + tabPad + titleWidth + tabPad;
     
-    // If current tab, set its background white, else use pale gray
-    fill(col == currentColumn ? 255 : 224);
-    rect(tabLeft[col], tabTop, tabRight[col], tabBottom);
-    
-    // If the current tab, use black for text, else use dark gray
-    fill(col == currentColumn ? 0 : 64);
-    text(title, runningX + tabPad, plotY1 - 10);
+    PImage tabImage = (col == currentColumn) ? tabImageHighlight[col]
+      : tabImageNormal[col];
+    image(tabImage, tabLeft[col], tabTop);
     
     runningX = tabRight[col];
   }
@@ -291,7 +311,7 @@ void mousePressed() {
     for (int col = 0; col < columnCount; col++) {
       if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
         setColumn(col);
-        //changeChartColor();
+        
       }
     }
   }
