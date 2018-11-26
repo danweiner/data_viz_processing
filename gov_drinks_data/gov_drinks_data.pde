@@ -25,6 +25,8 @@ float[] tabLeft, tabRight;
 float tabTop, tabBottom;
 float tabPad = 10;
 
+color[] fillColor;
+
 void setup() {
   size(720, 405);
   data = new FloatTable("milk-tea-coffee.tsv");
@@ -50,6 +52,19 @@ void setup() {
   textFont(plotFont);
   
   smooth();
+  
+  fillColor = new color[columnCount];
+  
+  fillColor[0] = color(255, 0, 0);
+  
+  println(fillColor);
+  
+  //for (int i = 0; i < columnCount; i++) {
+  //  fillColor[i] = 0;
+  //}
+  
+  //print(fillColor);
+  
 }
 
 void draw() {
@@ -60,7 +75,7 @@ void draw() {
   drawVolumeLabels();
   
   noStroke();
-  fill(#5679C1);
+  fill(fillColor[0]);
   drawDataArea(currentColumn);
   //drawDataBars(currentColumn);
   
@@ -276,6 +291,7 @@ void mousePressed() {
     for (int col = 0; col < columnCount; col++) {
       if (mouseX > tabLeft[col] && mouseX < tabRight[col]) {
         setColumn(col);
+        //changeChartColor();
       }
     }
   }
