@@ -30,6 +30,8 @@ PImage[] tabImageHighlight;
 
 color[] fillColor;
 
+Integrator[] interpolators;
+
 void setup() {
   size(720, 405);
   data = new FloatTable("milk-tea-coffee.tsv");
@@ -63,6 +65,13 @@ void setup() {
   fillColor[1] = color(0, 255, 0);
   fillColor[2] = color(0, 0, 255);
   
+  interpolators = new Integrator[rowCount];
+  for (int row = 0; row < rowCount; row++) {
+    float initialValue = data.getFloat(row, 0);
+    interpolators[row] = new Integrator(initialValue);
+    interpolators[row].attraction = 0.1; // Set lower than the default
+  }
+  
   //for (int i = 0; i < columnCount; i++) {
   //  fillColor[i] = 0;
   //}
@@ -89,10 +98,13 @@ void draw() {
   // fill graphs with different colors
   drawYearLabels();
   fill(fillColor[currentColumn]);
+  for (int row = 0; row < rowCount; row++) {
+    interpolators[row].update();
+  }
   drawDataArea(currentColumn);
   //drawDataBars(currentColumn);
   drawTitleTabs();
-  //changeFilled();
+  
 }
 
 void drawTitle() {
@@ -217,7 +229,7 @@ void drawDataCurve(int col) {
   beginShape();
   for (int row = 0; row < rowCount; row++) {
     if (data.isValid(row, col)) {
-      float value = data.getFloat(row, col);
+      float value = interpolators[row].value;
       float x = map(years[row], yearMin, yearMax, plotX1, plotX2);
       float y = map(value, dataMin, dataMax, plotY2, plotY1);
       
@@ -320,5 +332,8 @@ void mousePressed() {
 void setColumn (int col) {
   if (col != currentColumn) {
     currentColumn = col;
+  }
+  for (int row = 0; row < rowCount; row++) {
+    interpolators[row].target(data.getFloat(row, col));
   }
 }
